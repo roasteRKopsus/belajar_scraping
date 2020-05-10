@@ -1,0 +1,65 @@
+#dynamicjscript_scrap
+
+import pandas as pd
+from selenium import webdriver
+pd.set_option('display.max_rows', 5000)
+pd.set_option('display.max_columns', 5000)
+pd.set_option('display.width', 100000)
+pd.set_option('display.precision', 0)
+pd.option_context('display.colheader_justify','left')
+import statistics
+
+
+site = "https://shopee.co.id/search?keyword=handphone%20murah"
+#hdr = {'user-agent' : 'GoogleChrome'}
+driver = webdriver.Chrome(r"D:\New folder\chrome driver\chromedriver.exe")
+driver.implicitly_wait(20)
+driver.get(site)
+
+name_list = []
+price_list = []
+price_list_satuan = []
+name_list = []
+sales_list =[]
+
+product_class =driver.find_elements_by_class_name('O6wiAW')
+for name in product_class :
+    name_item = name.text
+    name_list.append(name_item)
+
+productprice = driver.find_elements_by_class_name('_2lBkmX')
+for price in productprice:
+    price_item = price.text
+    price_list.append(price_item)
+
+productprice_satuan = driver.find_elements_by_class_name('_341bF0')
+for price_satuan in productprice_satuan:
+    price_item_satuan = price_satuan.text
+    price_item_float = float(price_item_satuan)
+    price_list_satuan.append(price_item_float)
+
+product_sales = driver.find_elements_by_class_name('_18SLBt')
+for sales in product_sales:
+    sales = sales.text
+    sales_list.append(sales)
+
+print('price len :', len(price_list))
+print ('name len :', len(name_list))
+print('price satuan len :', len(price_list_satuan))
+print('sales len : ', len(sales_list))
+
+
+df_shopee = pd.DataFrame({
+    'name' : name_list,
+    'price': price_list,
+    'sales': sales_list
+})
+
+df_price = pd.DataFrame({
+    'price/satuan' : price_list_satuan
+})
+
+
+print(df_shopee)
+print(df_shopee.describe())
+print('describe : ', df_price.describe())
